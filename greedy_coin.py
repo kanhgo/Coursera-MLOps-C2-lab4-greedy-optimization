@@ -19,8 +19,12 @@ def greedy_coin(change):
     """Return a dictionary with the coin type as the key and the number of coins as the value"""
 
     print(f"Your change for {change}: ")
-    coins = [0.25, 0.10, 0.05, 0.01]
-    coin_lookup = {0.25: "quarter", 0.10: "dime", 0.05: "nickel", 0.01: "penny"}
+    # Convert all money to cents to avoid working with floating point numbers i.e. use integers. 
+    # Working with floats leads to errors in calcualtions with change ending in 9 due to the imprecise
+    # way float numbers  are stored by a computer e.g. 0.09 may be stored as 0.089999999999999997
+    change = change*100
+    coins = [25, 10, 5, 1]
+    coin_lookup = {25: "quarter", 10: "dime", 5: "nickel", 1: "penny"}
     coin_dict = {}
     for coin in coins:
         coin_dict[coin] = 0
@@ -33,15 +37,48 @@ def greedy_coin(change):
             print(f"{coin_dict[coin]} {coin_lookup[coin]}")
     return coin_dict
 
-
+#Edit the command line tool to take dollar and cents (original below)
 @click.command()
-@click.argument("change", type=float)
-def main(change):
+@click.option("--dollars", type=int, default=0, help="Number of dollars in the change")
+@click.option("--cents", type=int, default=0, help="Portion of change that totals less than $1")
+def main(dollars, cents): # Both default to 0 to handle instances when only one flag is called
     """Return the minimum number of coins for a given change
 
-    Example: ./greedy_coin.py 0.99
+    Example: ./greedy_coin.py --dollars 1 --cents 50
     """
+    # Comnbine dollars and cents
+    change = dollars + (cents/100)
+    
     greedy_coin(change)
+
+
+# def greedy_coin(change):
+#     """Return a dictionary with the coin type as the key and the number of coins as the value"""
+
+#     print(f"Your change for {change}: ")
+#     coins = [0.25, 0.10, 0.05, 0.01]
+#     coin_lookup = {0.25: "quarter", 0.10: "dime", 0.05: "nickel", 0.01: "penny"}
+#     coin_dict = {}
+#     for coin in coins:
+#         coin_dict[coin] = 0
+#     for coin in coins:
+#         while change >= coin:
+#             change -= coin
+#             coin_dict[coin] += 1
+#     for coin in coin_dict:
+#         if coin_dict[coin] > 0:
+#             print(f"{coin_dict[coin]} {coin_lookup[coin]}")
+#     return coin_dict
+
+
+# @click.command()
+# @click.argument("change", type=float)
+# def main(change):
+#     """Return the minimum number of coins for a given change
+
+#     Example: ./greedy_coin.py 0.99
+#     """
+#     greedy_coin(change)
 
 
 if __name__ == "__main__":
